@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FilePicker, PickFilesResult } from '@capawesome/capacitor-file-picker';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,11 @@ export class PickimagesService {
 
   async requestPermissions() {
   const result = await FilePicker.requestPermissions();
+  const cameraResult = await Camera.requestPermissions({ permissions: ['photos'] });
+  if (cameraResult) {
+    console.log('Camera permissions granted');
+  }
+  
   if (result) {
     console.log('Permissions granted:');
   }
@@ -46,6 +52,29 @@ export class PickimagesService {
     return null;
   }
 }
+
+async takePhoto(): Promise<{ base64Src: string, base64: string, path?: string } | null> {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true,
+        resultType: CameraResultType.Base64,
+        source: CameraSource.Camera
+      });
+
+      const base64 = image.base64String!;
+      const mimeType = `image/${image.format || 'jpeg'}`;
+
+      return {
+        base64Src: `data:${mimeType};base64,${base64}`,
+        base64: base64,
+        path: image.path
+      };
+    } catch (error) {
+      console.error('Error al tomar foto:', error);
+      return null;
+    }
+  }
 
 
 

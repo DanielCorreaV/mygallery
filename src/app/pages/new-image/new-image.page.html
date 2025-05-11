@@ -11,7 +11,7 @@
       <ion-row>
         <ion-col>
           <ion-card class="clickable-card">
-            <ion-card-content class="ion-text-center">
+            <ion-card-content class="ion-text-center" (click)="takePhoto()">
               <input type="file" accept="image/*" hidden #photoInput />
               <div (click)="photoInput.click()">
                 <ion-icon name="camera-outline" size="large"></ion-icon>

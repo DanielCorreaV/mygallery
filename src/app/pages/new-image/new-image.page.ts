@@ -79,4 +79,26 @@ export class NewImagePage implements OnInit {
       console.log('Form enviado', this.imageForm.value);
     }
   }
+
+  async takePhoto() {
+  const result = await this.pickImage.takePhoto();
+
+  if (result) {
+      this.imagePreview = result.base64Src;
+
+      this.imageForm.patchValue({
+        image: result.base64
+      });
+
+      this.fullImage = result;
+
+      if (this.imageForm.get('image')!.value !== result.base64) {
+      this.imagePreview = this.imageForm.get('image')!.value;  // Base64 de la foto editada
+      this.fullImage = { base64Src: this.imagePreview, base64: this.imageForm.get('image')!.value };
+    }
+
+    }
+}
+
+
 }
