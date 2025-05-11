@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { FirebaseService } from 'src/app/core/services/firebase.service';
+import { image } from 'src/app/models/file';
 
 @Component({
   selector: 'app-home',
@@ -8,11 +10,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomePage implements OnInit {
 
-  constructor() { }
+  constructor(private firebase: FirebaseService) { 
+    this.getImages();
+  }
 
+  images: image[] = []
+  
   ngOnInit() {
+   
   }
   
+  getImages() {
+    this.firebase.getImages().subscribe((data) => {
+      this.images = data;
+    });
+  }
 
   openCamera(){
 

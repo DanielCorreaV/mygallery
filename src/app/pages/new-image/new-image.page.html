@@ -12,13 +12,7 @@
         <ion-col>
           <ion-card class="clickable-card">
             <ion-card-content class="ion-text-center">
-              <input
-                type="file"
-                accept="image/*"
-                (change)="onImageSelected($event)"
-                hidden
-                #photoInput
-              />
+              <input type="file" accept="image/*" hidden #photoInput />
               <div (click)="photoInput.click()">
                 <ion-icon name="camera-outline" size="large"></ion-icon>
                 <div>Photo</div>
@@ -28,17 +22,9 @@
         </ion-col>
         <ion-col>
           <ion-card class="clickable-card">
-            <ion-card-content class="ion-text-center">
-              <input
-                type="file"
-                (change)="onFileSelected($event)"
-                hidden
-                #fileInput
-              />
-              <div (click)="fileInput.click()">
-                <ion-icon name="document-outline" size="large"></ion-icon>
-                <div>File</div>
-              </div>
+            <ion-card-content class="ion-text-center" (click)="onFileSelected()">
+              <ion-icon name="document-outline" size="large"></ion-icon>
+              <div>File</div>
             </ion-card-content>
           </ion-card>
         </ion-col>

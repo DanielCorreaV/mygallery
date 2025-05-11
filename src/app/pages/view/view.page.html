@@ -1,13 +1,28 @@
-<ion-header [translucent]="true">
+<ion-header translucent>
   <ion-toolbar>
-    <ion-title>view</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Foto</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">view</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content fullscreen class="ion-padding">
+  <div class="image-container">
+    @if(image.url){
+    <ion-img [src]="image.url" alt="Imagen"></ion-img>
+    } @else {
+    <ion-spinner name="crescent"></ion-spinner>
+    }
+  </div>
+
+  <!-- Desplegable inferior -->
+  <div class="details-panel" [class.open]="isPanelOpen" (click)="togglePanel()">
+    <div class="handle"></div>
+    <div class="details" *ngIf="isPanelOpen">
+      <h2>{{ 'IMG-'+image.date }}</h2>
+      <p><strong>Fecha:</strong> {{ image.date | date: 'medium' }}</p>
+      <p><strong>Descripción:</strong> {{ image.description || 'Sin descripción' }}</p>
+    </div>
+  </div>
 </ion-content>

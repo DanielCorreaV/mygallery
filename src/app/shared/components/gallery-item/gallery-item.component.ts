@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { File } from '../../../models/file';
+import { Component, Input, OnInit } from '@angular/core';
+import { image } from '../../../models/file';
 
 @Component({
   selector: 'gallery-item',
@@ -9,11 +9,10 @@ import { File } from '../../../models/file';
 })
 export class GalleryItemComponent  implements OnInit {
 
-  image: File = {
+  @Input() image: image = {
     url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/681px-Placeholder_view_vector.svg.png',
-    alt: 'awebo',
     description: "siuuuuu",
-    date: new Date()
+    date: 1234
   }
 
   constructor() { 

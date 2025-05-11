@@ -12,7 +12,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule)
   },
   {
-    path: 'view',
+    path: 'view/:imgId',
     loadChildren: () => import('./pages/view/view.module').then( m => m.ViewPageModule)
   },
   {

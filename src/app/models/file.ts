@@ -1,6 +1,5 @@
-export interface File {
+export interface image {
     url: string,
-    alt: string,
-    date: Date,
+    date: number,
     description: string
 }

@@ -11,7 +11,9 @@
 
 <ion-content>
   <div class="gallery-grid">
-    <gallery-item></gallery-item>
+    @for(image of images; track image.date){
+    <gallery-item [image]="image"></gallery-item>
+    }
 
   </div>
 

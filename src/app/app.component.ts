@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { PickimagesService } from './core/services/pickimages.service';
+import { StatusBar } from '@capacitor/status-bar';
 
 @Component({
   selector: 'app-root',
@@ -6,6 +8,11 @@ import { Component } from '@angular/core';
   styleUrls: ['app.component.scss'],
   standalone: false,
 })
-export class AppComponent {
-  constructor() {}
+export class AppComponent implements OnInit {
+  constructor(private picker: PickimagesService) {
+    this.picker.requestPermissions();
+  }
+  ngOnInit() {
+    StatusBar.hide();
+  }
 }

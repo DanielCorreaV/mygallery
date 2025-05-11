@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { GalleryItemComponent } from './components/gallery-item/gallery-item.component';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink, RouterModule } from '@angular/router';
 
 
 
@@ -11,8 +12,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     IonicModule,
-    
+    RouterLink,
+    RouterModule
   ],
-  exports: [GalleryItemComponent]
+  exports: [GalleryItemComponent, RouterModule]
 })
 export class SharedModule { }
