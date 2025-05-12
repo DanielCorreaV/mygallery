@@ -3,6 +3,8 @@ package io.ionic.starter;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.RemoteViews;
 import android.content.SharedPreferences;
 
@@ -16,12 +18,28 @@ import java.util.Random;
 
 public class ImageWidget extends AppWidgetProvider {
 
+  private static final Handler handler = new Handler(Looper.getMainLooper());
+  private static final int UPDATE_INTERVAL = 5000; // 5 segundos
+  private static final Runnable[] updateRunnables = new Runnable[1]; // soporte para 1 instancia del widget
+
+
   @Override
-  public void onUpdate(Context context, AppWidgetManager manager, int[] appWidgetIds) {
-    for (int appWidgetId : appWidgetIds) {
-      updateWidget(context, manager, appWidgetId);
+  public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    for (int i = 0; i < appWidgetIds.length; i++) {
+      final int widgetId = appWidgetIds[i];
+
+      updateRunnables[0] = new Runnable() {
+        @Override
+        public void run() {
+          updateWidget(context, appWidgetManager, widgetId);
+          handler.postDelayed(this, UPDATE_INTERVAL);
+        }
+      };
+
+      handler.post(updateRunnables[0]); // inicia el ciclo
     }
   }
+
 
   private void updateWidget(Context context, AppWidgetManager manager, int widgetId) {
     SharedPreferences prefs = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE);
@@ -53,4 +71,11 @@ public class ImageWidget extends AppWidgetProvider {
       e.printStackTrace();
     }
   }
+
+  @Override
+  public void onDeleted(Context context, int[] appWidgetIds) {
+    handler.removeCallbacks(updateRunnables[0]);
+  }
+
+
 }
