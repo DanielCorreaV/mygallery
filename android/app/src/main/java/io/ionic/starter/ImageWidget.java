@@ -3,9 +3,10 @@ package io.ionic.starter;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.RemoteViews;
 import android.content.SharedPreferences;
-import android.os.Handler;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.AppWidgetTarget;
@@ -13,33 +14,48 @@ import com.bumptech.glide.request.target.AppWidgetTarget;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class ImageWidget extends AppWidgetProvider {
+import java.util.Random;
+import java.util.HashMap;
+import java.util.Map;
 
-  private final Handler handler = new Handler();
-  private Runnable updateRunnable;
+public class ImageWidget extends AppWidgetProvider {
+  private static final int UPDATE_INTERVAL = 5000;
+  private static final Handler handler = new Handler(Looper.getMainLooper());
+  private static final Map<Integer, Runnable> updateRunnables = new HashMap<>();
 
   @Override
   public void onUpdate(Context context, AppWidgetManager manager, int[] appWidgetIds) {
-    for (int appWidgetId : appWidgetIds) {
-      updateWidget(context, manager, appWidgetId);
+    for (int widgetId : appWidgetIds) {
+      startRepeatingUpdate(context, manager, widgetId);
     }
+  }
 
-    updateRunnable = new Runnable() {
+  @Override
+  public void onDisabled(Context context) {
+    // Detener todos los updates cuando se elimina el último widget
+    for (Runnable r : updateRunnables.values()) {
+      handler.removeCallbacks(r);
+    }
+    updateRunnables.clear();
+  }
+
+  private void startRepeatingUpdate(Context context, AppWidgetManager manager, int widgetId) {
+    Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        for (int appWidgetId : appWidgetIds) {
-          updateWidget(context, manager, appWidgetId);
-        }
-        handler.postDelayed(this, 5000); // Repetir cada 5 segundos
+        updateWidget(context, manager, widgetId);
+        handler.postDelayed(this, UPDATE_INTERVAL);
       }
     };
-    handler.postDelayed(updateRunnable, 5000);
+
+    updateRunnables.put(widgetId, runnable);
+    handler.post(runnable);
   }
+
 
   private void updateWidget(Context context, AppWidgetManager manager, int widgetId) {
     SharedPreferences prefs = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE);
     String json = prefs.getString("widgetImages", null);
-    int currentIndex = prefs.getInt("widgetIndex", 0);
 
     if (json == null) return;
 
@@ -47,12 +63,9 @@ public class ImageWidget extends AppWidgetProvider {
       JSONArray images = new JSONArray(json);
       if (images.length() == 0) return;
 
-      // Ciclo secuencial: volver al inicio si se pasa del último
-      if (currentIndex >= images.length()) {
-        currentIndex = 0;
-      }
+      int index = new Random().nextInt(images.length());
+      JSONObject obj = images.getJSONObject(index);
 
-      JSONObject obj = images.getJSONObject(currentIndex);
       String imageUrl = obj.getString("url");
       String description = obj.getString("description");
 
@@ -63,15 +76,24 @@ public class ImageWidget extends AppWidgetProvider {
       Glide.with(context.getApplicationContext())
         .asBitmap()
         .load(imageUrl)
+        .override(300, 300)
         .into(awt);
 
       manager.updateAppWidget(widgetId, views);
-
-      // Guardar el siguiente índice para la próxima vez
-      prefs.edit().putInt("widgetIndex", currentIndex + 1).apply();
-
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
+
+  @Override
+  public void onDeleted(Context context, int[] appWidgetIds) {
+    for (int widgetId : appWidgetIds) {
+      Runnable r = updateRunnables.get(widgetId);
+      if (r != null) {
+        handler.removeCallbacks(r);
+        updateRunnables.remove(widgetId);
+      }
+    }
+  }
+
 }
